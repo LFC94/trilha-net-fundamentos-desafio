@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace DesafioFundamentos.Models
 {
     public class Estacionamento
@@ -14,9 +16,44 @@ namespace DesafioFundamentos.Models
 
         public void AdicionarVeiculo()
         {
-            // TODO: Pedir para o usuário digitar uma placa (ReadLine) e adicionar na lista "veiculos"
-            // *IMPLEMENTE AQUI*
             Console.WriteLine("Digite a placa do veículo para estacionar:");
+            string placa = Console.ReadLine();
+
+            if (!ValidarPlaca(placa))
+            {
+                Console.WriteLine("A placa do veículo digitada é invalida");
+                return;
+            }
+
+            veiculos.Add(placa);
+
+        }
+
+        private bool ValidarPlaca(string placa)
+        {
+            if (string.IsNullOrWhiteSpace(placa)) { return false; }
+
+            if (placa.Length > 8 || placa.Length < 6) { return false; }
+
+            placa = placa.Replace("-", "").Trim();
+
+            /*
+             *  Verifica se o caractere da posição 4 é uma letra, se sim, aplica a validação para o formato de placa do Mercosul,
+             *  senão, aplica a validação do formato de placa padrão.
+             */
+            if (char.IsLetter(placa, 4))
+            {
+                /*
+                 *  Verifica se a placa está no formato: três letras, um número, uma letra e dois números.
+                 */
+                var padraoMercosul = new Regex("[a-zA-Z]{3}[0-9]{1}[a-zA-Z]{1}[0-9]{2}");
+                return padraoMercosul.IsMatch(placa);
+            }
+
+            // Verifica se os 3 primeiros caracteres são letras e se os 4 últimos são números.
+            var padraoNormal = new Regex("[a-zA-Z]{3}[0-9]{4}");
+            return padraoNormal.IsMatch(placa);
+
         }
 
         public void RemoverVeiculo()
